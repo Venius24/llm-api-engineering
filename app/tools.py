@@ -1,5 +1,6 @@
 import httpx
 
+from app import config
 from app.schemas import SearchArgs
 
 
@@ -7,9 +8,9 @@ def search_study_materials(query: str) -> dict:
     print(f"[TOOL] manual-rag query: {query}")
 
     response = httpx.post(
-        "http://127.0.0.1:8000/ask",
+        config.RAG_URL,
         json={"question": query},
-        timeout=60,
+        timeout=config.RAG_TIMEOUT,
     )
 
     response.raise_for_status()

@@ -1,7 +1,7 @@
 import httpx
 import pytest
 
-from app import tools
+from app import config, tools
 from app.schemas import SearchArgs
 
 
@@ -36,3 +36,18 @@ def test_search_raises_on_rag_error(monkeypatch):
 
     with pytest.raises(httpx.HTTPStatusError):
         tools.search_study_materials("q")
+
+
+def test_rag_url_and_timeout_are_configurable(monkeypatch):
+    seen = {}
+
+    def fake_post(url, json, timeout):
+        seen.update(url=url, timeout=timeout)
+        return httpx.Response(200, json={}, request=httpx.Request("POST", url))
+
+    monkeypatch.setattr(config, "RAG_URL", "http://rag:9000/ask")
+    monkeypatch.setattr(config, "RAG_TIMEOUT", 5.0)
+    monkeypatch.setattr(tools.httpx, "post", fake_post)
+
+    tools.search_study_materials("q")
+    assert seen == {"url": "http://rag:9000/ask", "timeout": 5.0}
