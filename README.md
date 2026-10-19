@@ -126,6 +126,20 @@ tool errors for invalid arguments, unknown tools and RAG failures, streaming of
 text deltas only, the structured route decision, input validation, and the 502/503
 mappings. It does not call the real DeepSeek API.
 
+### Live check
+
+On 2026-10-19 the service code was run against the real DeepSeek API (`deepseek-flash`
+through the Responses API) with manual-rag deliberately offline:
+
+- a greeting was answered directly, without a tool call;
+- a study question triggered `search_study_materials`; the RAG request failed, the
+  model received `{"error": "study materials search failed: ConnectError"}` and streamed
+  an answer (77 text deltas) saying the knowledge base was unavailable instead of
+  inventing one;
+- `route_question` returned a valid `RouteDecision` (`use_rag=true` with a search query).
+
+Not exercised live: a second tool round within one request (covered by the offline tests).
+
 ## Tech stack
 
 Python · FastAPI · Pydantic · OpenAI Python SDK (Responses API) · DeepSeek · HTTPX · pytest
