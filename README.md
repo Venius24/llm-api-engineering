@@ -1,5 +1,7 @@
 # LLM API Engineering
 
+[![tests](https://github.com/Venius24/llm-api-engineering/actions/workflows/tests.yml/badge.svg)](https://github.com/Venius24/llm-api-engineering/actions/workflows/tests.yml)
+
 A small LLM backend demonstrating structured outputs, tool calling, RAG integration, and streaming responses.
 
 ## Features
@@ -110,6 +112,19 @@ Health check:
 ```bash
 curl http://127.0.0.1:8001/health
 ```
+
+## Tests
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
+
+The suite runs offline: the LLM client and the `manual-rag` HTTP call are replaced
+with fakes. It covers the direct-answer path, the tool-call round trip (the second
+request replays the function call and its output), streaming of text deltas only,
+rejection of invalid tool arguments before the tool runs, and the `/chat` and
+`/health` endpoints.
 
 ## Chat API
 
